@@ -1433,6 +1433,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8252039902418124178, guid: d79e4eb8266b95c4e8a32c27333ffb0c, type: 3}
+      propertyPath: m_TagString
+      value: Grass
+      objectReference: {fileID: 0}
     - target: {fileID: -447275898630060098, guid: d79e4eb8266b95c4e8a32c27333ffb0c, type: 3}
       propertyPath: m_LocalPosition.z
       value: -28.43
@@ -1440,6 +1444,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d79e4eb8266b95c4e8a32c27333ffb0c, type: 3}
       propertyPath: m_Name
       value: MappPppp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3095523229525090271, guid: d79e4eb8266b95c4e8a32c27333ffb0c, type: 3}
+      propertyPath: m_TagString
+      value: Street
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
