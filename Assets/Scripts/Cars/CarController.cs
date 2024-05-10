@@ -7,8 +7,10 @@ namespace Cars
     public enum ControlGameMode
     {
         KEYBOARD = 1,
-        TOUCH = 2
+        TOUCH = 2,
+        AI = 3
     }
+
 
     [System.Serializable]
     public class CarSetting
