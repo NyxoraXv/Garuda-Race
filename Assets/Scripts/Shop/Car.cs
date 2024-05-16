@@ -11,7 +11,8 @@ public class Car : MonoBehaviour
     [Range(0, 100)]public float speed;
     [Range (0, 100)] public float grip;
     [Range(0, 100)] public float engine;
-    public Sprite rarity;
+    public string rarity;
+    public Sprite rarityIcon;
     public int price;
     public bool isPurchased;
 }
