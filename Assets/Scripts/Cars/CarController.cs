@@ -1018,6 +1018,7 @@ namespace Cars
         {
             // Calculate pitch (keep it within reasonable bounds)
             _pitchSound = Mathf.Clamp(1.2f + (motorRPM - carSetting.idleRPM) / (carSetting.shiftUpRPM - carSetting.idleRPM), 1.0f, 10.0f);
+            print(_pitchSound);
 
             _shiftTime = Mathf.MoveTowards(_shiftTime, 0.0f, 0.1f);
 
@@ -1067,12 +1068,13 @@ namespace Cars
             Gizmos.DrawSphere(carSetting.shiftCentre / transform.lossyScale.x, 0.2f);
         }
 
-        public TMPro.TextMeshProUGUI kmh, gear;
-        private void OnGUI()
+        public int getSpeed()
         {
-
-            kmh.text =  ($"{Mathf.Floor(speed)} km/h");
-            gear.text = ($"Gear {currentGear}");
+            return Convert.ToInt32(Mathf.Floor(speed));
+        }
+        public int getGear()
+        {
+            return (currentGear);
         }
 
         private void OnApplicationFocus(bool hasFocus)
