@@ -5,56 +5,69 @@ using DG.Tweening;
 
 public class LeaderboardSystem : MonoBehaviour
 {
-    public Transform playerCar;
-    public string enemyCarTag; // Tag for enemy cars
-    public TextMeshProUGUI[] leaderboardTexts; // Array of TextMeshProUGUI elements for the leaderboard
-    public Image[] leaderboardImages; // Array of Image elements for the leaderboard backgrounds
+    public CarGameManager playerCarGameManager;
+    public string enemyCarTag;
+    public TextMeshProUGUI[] leaderboardTexts;
+    public Image[] leaderboardImages;
 
-    private GameObject[] enemyCars; // Array to store enemy car GameObjects
-    private float[] distances; // Array to store distances between player and enemies
-    private int[] sortedIndices; // Indices of leaderboardTexts sorted by distance
+    private CarGameManager[] carGameManagers;
+    private int[] lapsCompleted;
+    private int[] sortedIndices;
 
     void Start()
     {
-        // Find all enemy cars in the scene based on tag
-        UpdateEnemyCars();
-        distances = new float[enemyCars.Length];
-        sortedIndices = new int[enemyCars.Length];
+        UpdateCarGameManagers();
+        lapsCompleted = new int[carGameManagers.Length];
+        sortedIndices = new int[carGameManagers.Length];
     }
 
     void Update()
     {
-        UpdateDistances();
+        UpdateLapsCompleted();
         SortLeaderboard();
         UpdateLeaderboardUI();
     }
 
-    void UpdateEnemyCars()
+    void UpdateCarGameManagers()
     {
-        enemyCars = GameObject.FindGameObjectsWithTag(enemyCarTag);
-    }
+        GameObject[] enemyCars = GameObject.FindGameObjectsWithTag(enemyCarTag);
+        carGameManagers = new CarGameManager[enemyCars.Length + 1];
+        carGameManagers[0] = playerCarGameManager;
 
-    void UpdateDistances()
-    {
         for (int i = 0; i < enemyCars.Length; i++)
         {
-            distances[i] = Vector3.Distance(playerCar.position, enemyCars[i].transform.position);
+            carGameManagers[i + 1] = enemyCars[i].GetComponent<CarGameManager>();
         }
     }
 
+    void UpdateLapsCompleted()
+    {
+        for (int i = 0; i < carGameManagers.Length; i++)
+        {
+            if (carGameManagers[i] != null)
+            {
+                lapsCompleted[i] = carGameManagers[i].lapsCompleted;
+            }
+            else
+            {
+                Debug.LogWarning("CarGameManager at index " + i + " is null.");
+            }
+        }
+    }
+
+    // Corrected sorting logic
     void SortLeaderboard()
     {
-        for (int i = 0; i < enemyCars.Length; i++)
+        for (int i = 0; i < carGameManagers.Length; i++)
         {
             sortedIndices[i] = i;
         }
-
-        System.Array.Sort(distances, sortedIndices);
+        System.Array.Sort(sortedIndices, (x, y) => lapsCompleted[y].CompareTo(lapsCompleted[x]));
     }
 
     void UpdateLeaderboardUI()
     {
-        int leaderboardCount = Mathf.Min(leaderboardTexts.Length, enemyCars.Length);
+        int leaderboardCount = Mathf.Min(leaderboardTexts.Length, carGameManagers.Length);
 
         for (int i = 0; i < leaderboardCount; i++)
         {
@@ -62,19 +75,41 @@ public class LeaderboardSystem : MonoBehaviour
             TextMeshProUGUI text = leaderboardTexts[i];
             Image parentImage = leaderboardImages[i];
 
-            // Update the text content
-            text.text = "Enemy " + (i + 1) + ": " + distances[index].ToString("F2") + "m";
+            string carName = (index == 0) ? "Player" : "Car " + (i + 1);
+            text.text = carName + ": " + lapsCompleted[index] + " laps";
 
-            // Smoothly fade the parent image using DoTween
-            parentImage.DOFade(1f, 0.5f).SetEase(Ease.OutQuad); // Fade in
-            parentImage.DOFade(0f, 0.5f).SetDelay(3f).SetEase(Ease.InQuad); // Fade out after 3 seconds
+            parentImage.DOFade(1f, 0.5f).SetEase(Ease.OutQuad).OnComplete(() =>
+                parentImage.DOFade(0f, 0.5f).SetDelay(3f).SetEase(Ease.InQuad));
         }
 
-        // Clear remaining leaderboard slots
         for (int i = leaderboardCount; i < leaderboardTexts.Length; i++)
         {
             leaderboardTexts[i].text = "";
         }
     }
 
+    public int[] GetSortedIndices()
+    {
+        return sortedIndices;
+    }
+
+    // Method to get the laps completed
+    public int[] GetLapsCompleted()
+    {
+        return lapsCompleted;
+    }
+
+    //New method to get the winner index
+    public int GetWinnerIndex()
+    {
+        if (sortedIndices.Length > 0)
+        {
+            return sortedIndices[0]; // The first index is the winner
+        }
+        else
+        {
+            Debug.LogWarning("No participants in the leaderboard.");
+            return -1; // Or some other indicator of no winner
+        }
+    }
 }

@@ -44,6 +44,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: banners
     second: {fileID: 2100000, guid: 3201ab18d164e4240926749bf9f1f549, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: startlights
+    second: {fileID: 2100000, guid: 7743c312f92f4d54da887825a9dbb704, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

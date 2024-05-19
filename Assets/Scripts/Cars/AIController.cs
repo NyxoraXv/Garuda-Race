@@ -6,12 +6,19 @@ public class AICarController : MonoBehaviour
     public float maxSpeed = 20f;
     public float rotationSpeed = 100f;
     public float acceleration = 5f;
-    public float brakingForce = 10f;
+    private const float ACCELERATION_BRAKING_RATIO = 2200f / 11f; // Your desired ratio
 
     public WheelCollider frontLeftWheel;
     public WheelCollider frontRightWheel;
     public WheelCollider rearLeftWheel;
     public WheelCollider rearRightWheel;
+
+    public GameObject frontLeftWheelMesh;
+    public GameObject frontRightWheelMesh;
+    public GameObject rearLeftWheelMesh;
+    public GameObject rearRightWheelMesh;
+    public bool rotateWheelsWithSpeed = true; // Toggle in Inspector
+    public float wheelRotationSpeedMultiplier = 6f;
 
     private int currentWaypointIndex = 0;
     private float targetSteerAngle = 0f;
@@ -19,8 +26,7 @@ public class AICarController : MonoBehaviour
 
     void Start()
     {
-        Time.timeScale = 20f; // Optional: Speed up simulation time
-
+        Time.timeScale = 2f;
         // Initialize car to look at the first waypoint
         if (waypointEditor.waypoints.Length > 0)
         {
@@ -50,11 +56,14 @@ public class AICarController : MonoBehaviour
         float targetSpeed = maxSpeed * (1f - Mathf.Clamp01(distanceToWaypoint / 20f));
         targetSpeed = Mathf.Clamp(targetSpeed, maxTurningSpeed, maxSpeed);
 
+        // Calculate braking force based on the ratio
+        float brakingForce = acceleration / ACCELERATION_BRAKING_RATIO;
+
         // Smooth acceleration and braking
         float accelerationRate = acceleration * Time.deltaTime;
         float brakingRate = brakingForce * Time.deltaTime;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed,
-                                        currentSpeed < targetSpeed ? accelerationRate : brakingRate);
+                                       currentSpeed < targetSpeed ? accelerationRate : brakingRate);
 
         // Steering Logic
         float steeringAngle = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
@@ -73,5 +82,23 @@ public class AICarController : MonoBehaviour
         frontRightWheel.motorTorque = movement;
         rearLeftWheel.motorTorque = movement;
         rearRightWheel.motorTorque = movement;
+
+        if (rotateWheelsWithSpeed)
+        {
+            RotateWheelMeshBySpeed(frontLeftWheelMesh, currentSpeed);
+            RotateWheelMeshBySpeed(frontRightWheelMesh, currentSpeed);
+            RotateWheelMeshBySpeed(rearLeftWheelMesh, currentSpeed);
+            RotateWheelMeshBySpeed(rearRightWheelMesh, currentSpeed);
+        }
     }
+
+    void RotateWheelMeshBySpeed(GameObject wheelMesh, float speed)
+    {
+        // Calculate rotation angle based on speed and time
+        float rotationAngle = speed * wheelRotationSpeedMultiplier * Time.deltaTime;
+
+        // Rotate the wheel mesh around its local X axis (forward)
+        wheelMesh.transform.Rotate(Vector3.right, rotationAngle, Space.Self);
+    }
+
 }
