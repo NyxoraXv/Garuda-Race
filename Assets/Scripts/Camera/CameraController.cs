@@ -26,6 +26,14 @@ namespace CameraGame
         public float height = 1.0f;
         public float angle = 20.0f;
 
+        public float minFOV = 80f; // Minimum FOV at low RPM
+        public float maxFOV = 1400f; // Maximum FOV at high RPM
+        public float targetRPMForMaxFOV = 3000f; // RPM where max FOV is reached
+        public float sensitivity = 2f; // Adjust this to control sensitivity
+
+        public CarController car_controller;
+
+
         [HideInInspector] public List<Transform> cameraSwitchView;
         // [HideInInspector] public Transform[] cameraSwitchView;
 
@@ -327,7 +335,9 @@ namespace CameraGame
                 restTime = Mathf.MoveTowards(restTime, 0.0f, Time.deltaTime);
             }
 
-            GetComponent<Camera>().fieldOfView = Mathf.Clamp(_CarController.speed / 10.0f + 60.0f, 60.0f, 90.0f);
+            float speedRatio = _CarController.speed / 100.0f; // Normalize speed to 0-1 range
+            float fovBoost = Mathf.Pow(speedRatio, 2f); // Exponentially increase effect with speed
+            GetComponent<Camera>().fieldOfView = Mathf.Clamp(60.0f + fovBoost * 60.0f, 60.0f, 100.0f);
 
             if (Input.GetKeyDown(KeyCode.C))
             {

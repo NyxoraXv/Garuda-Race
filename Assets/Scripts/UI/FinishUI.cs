@@ -41,26 +41,20 @@ public class FinishUIScript : MonoBehaviour
 
     private void UpdateLeaderboard()
     {
-        // Get the leaderboard data (array of car indices sorted by performance)
         int[] sortedIndices = leaderboardSystem.GetSortedIndices();
-        int[] lapsCompleted = leaderboardSystem.GetLapsCompleted();
 
-        // Populate the UI leaderboard
         for (int i = 0; i < leaderboardTexts.Length; i++)
         {
             if (i < sortedIndices.Length)
             {
                 int carIndex = sortedIndices[i];
-
-                // Determine the car's name (special case for player)
                 string carName = (carIndex == 0) ? "Player" : $"Car {carIndex + 1}";
 
-                // Display the car's name and lap count
-                leaderboardTexts[i].text = $"{carName}: {lapsCompleted[carIndex]} laps";
+                // Format without laps, showing score
+                leaderboardTexts[i].text = $"{(i + 1)}. {carName}"; // F2 for 2 decimal places
             }
             else
             {
-                // Clear any unused leaderboard slots
                 leaderboardTexts[i].text = "";
             }
         }

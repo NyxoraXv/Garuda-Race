@@ -24,9 +24,13 @@ public class AICarController : MonoBehaviour
     private float targetSteerAngle = 0f;
     private float currentSpeed = 0f;
 
+    public float startDelaySeconds = 3f; // Delay in seconds before the car starts moving
+    private float elapsedTime = 0f;  // Track elapsed time
+    private bool startedMoving = false; // Flag to indicate if the car has started
+
+
     void Start()
     {
-        Time.timeScale = 2f;
         // Initialize car to look at the first waypoint
         if (waypointEditor.waypoints.Length > 0)
         {
@@ -36,6 +40,18 @@ public class AICarController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!startedMoving)
+        {
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= startDelaySeconds)
+            {
+                startedMoving = true;
+            }
+            else
+            {
+                return; // Exit FixedUpdate until the delay is over
+            }
+        }
         // Ensure waypoints exist before proceeding
         if (waypointEditor.waypoints == null || waypointEditor.waypoints.Length == 0)
             return;
